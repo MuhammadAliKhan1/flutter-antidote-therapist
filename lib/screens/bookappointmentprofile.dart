@@ -1,4 +1,6 @@
-import 'package:antidote/screens/chat.dart';
+import 'package:antidote/models/user_model.dart';
+import 'package:antidote/screens/chat_screen.dart';
+import 'package:antidote/screens/voice_call.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,13 +9,28 @@ import '../global.dart';
 import './bookAnAppointment.dart';
 
 class BookAnAppointmentProfile extends StatefulWidget {
+  final User patientData;
+
+  const BookAnAppointmentProfile({
+    Key key,
+    @required this.patientData,
+  }) : super(
+          key: key,
+        );
   @override
   _BookAnAppointmentProfileState createState() =>
-      _BookAnAppointmentProfileState();
+      _BookAnAppointmentProfileState(
+        patientData: patientData,
+      );
 }
 
 class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
   double rating = 4.5;
+  final User patientData;
+
+  _BookAnAppointmentProfileState({
+    @required this.patientData,
+  });
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +67,14 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                           }),
                       Spacer(),
                       Container(
-                        child: AutoSizeText("Book Appointment",
-                            style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25)),
+                        child: AutoSizeText(
+                          "Book Appointment",
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          ),
+                        ),
                       ),
                       Spacer(),
                     ],
@@ -70,7 +90,11 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                         child: CircleAvatar(
                           radius: 50,
                           child: Image(
-                            image: AppImages.baldMan,
+                            image: patientData.photoUrl == null
+                                ? AppImages.baldMan
+                                : NetworkImage(
+                                    patientData.photoUrl,
+                                  ),
                           ),
                         ),
                       ),
@@ -86,11 +110,14 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                     ],
                   ),
                   Spacer(),
-                  AutoSizeText("Thp. Dikhsa Sen",
-                      style: GoogleFonts.roboto(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18)),
+                  AutoSizeText(
+                    patientData.name,
+                    style: GoogleFonts.roboto(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
                   SmoothStarRating(
                     starCount: 5,
                     size: 25,
@@ -106,9 +133,11 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                     InkWell(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BookAnAppointment()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookAnAppointment(),
+                          ),
+                        );
                       },
                       child: Stack(
                         children: <Widget>[
@@ -132,10 +161,7 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                     ),
                     Spacer(),
                     InkWell(
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Chat()));
-                      },
+                      onTap: () {},
                       child: Stack(
                         children: <Widget>[
                           Container(
@@ -168,10 +194,13 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                         Positioned(
                           right: 10,
                           bottom: 10,
-                          child: Image(
-                            image: AppImages.phoneIcon,
-                            height: MediaQuery.of(context).size.height / 25,
-                            width: MediaQuery.of(context).size.height / 25,
+                          child: InkWell(
+                            onTap: () {},
+                            child: Image(
+                              image: AppImages.phoneIcon,
+                              height: MediaQuery.of(context).size.height / 25,
+                              width: MediaQuery.of(context).size.height / 25,
+                            ),
                           ),
                         ),
                       ],
@@ -188,10 +217,15 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
                         Positioned(
                           right: 10,
                           bottom: 10,
-                          child: Image(
-                            image: AppImages.videoSymbol,
-                            height: MediaQuery.of(context).size.height / 25,
-                            width: MediaQuery.of(context).size.height / 25,
+                          child: InkWell(
+                            child: InkWell(
+                              onTap: () {},
+                              child: Image(
+                                image: AppImages.videoSymbol,
+                                height: MediaQuery.of(context).size.height / 25,
+                                width: MediaQuery.of(context).size.height / 25,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -209,7 +243,9 @@ class _BookAnAppointmentProfileState extends State<BookAnAppointmentProfile> {
           child: AutoSizeText(
             "\tReviews",
             style: GoogleFonts.roboto(
-                color: AppColors.blue, fontSize: 30, fontWeight: FontWeight.bold),
+                color: AppColors.blue,
+                fontSize: 30,
+                fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(

@@ -1,12 +1,18 @@
+import 'package:antidote/models/inherited/therapist_data.dart';
+import 'package:antidote/models/therapist_model.dart';
+import 'package:antidote/models/user_model.dart';
+import 'package:antidote/screens/bookappointmentprofile.dart';
+import 'package:antidote/screens/chat_screen.dart';
+import 'package:antidote/screens/earningandsession.dart';
+import 'package:antidote/screens/notification.dart';
 import 'package:antidote/screens/patientslist.dart';
+import 'package:antidote/widgets/dashboard-widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:antidote/global.dart';
-import './notification.dart';
-import 'earningandsession.dart';
-import './bookappointmentprofile.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -17,6 +23,8 @@ class _DashboardState extends State<Dashboard> {
   double rating;
   @override
   Widget build(BuildContext context) {
+    final TherapistInherit inheritedData = TherapistInherit.of(context);
+    final Therapist therapistData = inheritedData.therapistData;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
@@ -35,9 +43,11 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EarningAndSession()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EarningAndSession(),
+                      ),
+                    );
                   },
                 ),
                 Image(
@@ -50,9 +60,11 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NotificationAntidote()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationAntidote(),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -78,13 +90,17 @@ class _DashboardState extends State<Dashboard> {
                           fontSize: 30),
                     ),
                     subtitle: AutoSizeText(
-                      "Harry Garison",
-                      style:
-                          GoogleFonts.roboto(color: AppColors.blue, fontSize: 18),
+                      therapistData.name,
+                      style: GoogleFonts.roboto(
+                          color: AppColors.blue, fontSize: 18),
                     ),
                     trailing: CircleAvatar(
                       radius: 30,
-                      child: Image(image: AppImages.baldMan),
+                      child: therapistData.photoUrl == null
+                          ? Image(image: AppImages.baldMan)
+                          : NetworkImage(
+                              therapistData.photoUrl,
+                            ),
                     ),
                   ),
                 ),
@@ -110,9 +126,11 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PatientsList()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PatientsList(),
+                            ),
+                          );
                         },
                       ),
                     ])
@@ -120,69 +138,40 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           SliverToBoxAdapter(
-            child: Container(
-              height: 165,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    BookAnAppointmentProfile()));
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Stack(
-                              children: <Widget>[
-                                CircleAvatar(
-                                    radius: 30,
-                                    child: Image(image: AppImages.decentMan)),
-                                Positioned(
-                                  right: 1,
-                                  child: Image(
-                                    image: AppImages.onlineStatus,
-                                    height:
-                                        MediaQuery.of(context).size.height / 30,
-                                    width:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                )
-                              ],
+            child: StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance
+                    .collection(FireStoreKeys.patientsCollection)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    List<DocumentSnapshot> patientList =
+                        snapshot.data.documents;
+                    return Container(
+                      height: 165,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: patientList.length,
+                        physics: BouncingScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return DashboardListWidget(
+                            rating: 5,
+                            name: patientList[index].data['name'],
+                            category: 'No Category',
+                            photoUrl: patientList[index].data['photoUrl'],
+                            routeTo: ChatScreen(
+                              patientData: User.fromSnapshot(
+                                patientList[index],
+                              ),
                             ),
-                            SmoothStarRating(
-                              starCount: 5,
-                              size: 25,
-                              allowHalfRating: false,
-                              filledIconData: Icons.star,
-                              color: AppColors.blue,
-                              borderColor: AppColors.blue,
-                            ),
-                            AutoSizeText("Thp. Dikhsa Sen",
-                                style: GoogleFonts.roboto(
-                                    color: AppColors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15)),
-                            AutoSizeText("Sleeping Disorder",
-                                style: GoogleFonts.roboto(
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12)),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     );
-                  }),
-            ),
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                }),
           ),
           SliverToBoxAdapter(
             child: Row(
@@ -220,10 +209,13 @@ class _DashboardState extends State<Dashboard> {
                     return InkWell(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    BookAnAppointmentProfile()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookAnAppointmentProfile(
+                              patientData: null,
+                            ),
+                          ),
+                        );
                       },
                       child: Card(
                         shape: RoundedRectangleBorder(
@@ -262,11 +254,14 @@ class _DashboardState extends State<Dashboard> {
                                     color: AppColors.blue,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15)),
-                            AutoSizeText("Sleeping Disorder",
-                                style: GoogleFonts.roboto(
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12)),
+                            AutoSizeText(
+                              "Sleeping Disorder",
+                              style: GoogleFonts.roboto(
+                                color: AppColors.grey,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
                           ],
                         ),
                       ),

@@ -3,8 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:antidote/helpers/locator.dart';
 import 'package:antidote/helpers/navigation_service.dart';
 import 'package:antidote/helpers/shared_preferences.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class Routes {
   static const String home = '/home_master';
@@ -30,8 +28,6 @@ abstract class Buttons {
 final Future<SharedPreferences> sharedPreferences =
     SharedPreferences.getInstance();
 
-
-
 abstract class AppColors {
   //Colors
   static const blue = Color(0xff10799F);
@@ -56,9 +52,11 @@ abstract class AppColors {
 }
 
 abstract class FireStoreKeys {
-  static const String patientUsersCollection = 'patients';
-  static const String messagesCollection = 'patients';
-  static const String patientMessagesCollection = 'messages';
+  static const String patientsCollection = 'patients';
+  static const String therapistsCollection = 'therapists';
+  static const String diaryCollection = 'diary';
+  static const String messagesCollection = 'message';
+  static const String chatCollection = 'chatSession';
 }
 
 abstract class AppImages {
@@ -90,7 +88,6 @@ abstract class AppImages {
   static const AssetImage onlineStatus = AssetImage("assets/onlineStatus.png");
   static const AssetImage typing = AssetImage("assets/typing.png");
   static const AssetImage microphone = AssetImage("assets/microphone.png");
- 
 }
 
 abstract class LoginStatus {
@@ -108,11 +105,10 @@ abstract class RouteNames {
 //UserCache userCache = new UserCache();
 SharedPreferencesHandler prefHandle = SharedPreferencesHandler();
 bool isLoading = false;
-String userEmail;
-final GoogleSignIn googleLogin = GoogleSignIn();
-final FacebookLogin facebookLogin = FacebookLogin();
+String therapistNumber;
 final NavigationService navigationService = locator<NavigationService>();
-
+final twillioAPIKey = 'SK3d3ca157c18a3adf2532bd51f18d82fc';
 //TODO: Add Google Login to IOS .plist file
 //TODO: Add Facebook Login to IOS .plist file
-
+//TODO: add internet permission ios
+//TODO: add firestore permssion ios

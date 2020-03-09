@@ -1,8 +1,9 @@
 import 'dart:async';
-
+import 'package:antidote/screens/home.dart';
 import 'package:antidote/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:antidote/global.dart';
+import '../global.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -10,15 +11,41 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool isFetchingSharedPrefs = false;
   @override
   void initState() {
     super.initState();
+    getEmail();
+  }
+
+  getEmail() async {
+    setState(() {
+      isFetchingSharedPrefs = true;
+    });
+    therapistNumber = await prefHandle.getValue('therapistNumber');
+    print(therapistNumber);
+    if (therapistNumber != null)
+      Timer(
+        Duration(seconds: 2),
+        () => Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(seconds: 2),
+            pageBuilder: (context, __, ___) => Home(),
+          ),
+        ),
+      );
+    else
+      setTimer();
+  }
+
+  setTimer() {
     Timer(
       Duration(seconds: 3),
       () => Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          transitionDuration: Duration(seconds: 1),
+          transitionDuration: Duration(seconds: 2),
           pageBuilder: (context, __, ___) => LoginScreen(),
         ),
       ),
@@ -27,9 +54,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
           child: Hero(
             child: Image(
               height: 250,
