@@ -25,6 +25,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     final TherapistInherit inheritedData = TherapistInherit.of(context);
     final Therapist therapistData = inheritedData.therapistData;
+  
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
@@ -273,4 +274,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
+
+
 }

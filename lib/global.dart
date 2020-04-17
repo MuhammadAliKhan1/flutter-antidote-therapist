@@ -88,6 +88,8 @@ abstract class AppImages {
   static const AssetImage onlineStatus = AssetImage("assets/onlineStatus.png");
   static const AssetImage typing = AssetImage("assets/typing.png");
   static const AssetImage microphone = AssetImage("assets/microphone.png");
+  static const AssetImage pickupCall = AssetImage("assets/answer_call.png");
+  static const AssetImage hangupCall = AssetImage("assets/hangup_call.png");
 }
 
 abstract class LoginStatus {
@@ -108,6 +110,9 @@ bool isLoading = false;
 String therapistNumber;
 final NavigationService navigationService = locator<NavigationService>();
 final twillioAPIKey = 'SK3d3ca157c18a3adf2532bd51f18d82fc';
+
+// Agora AppId
+const APP_ID = 'd14d747a7f834715bb8b30c69c242467';
 //TODO: Add Google Login to IOS .plist file
 //TODO: Add Facebook Login to IOS .plist file
 //TODO: add internet permission ios
